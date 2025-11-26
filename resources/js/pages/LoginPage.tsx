@@ -65,9 +65,20 @@ const LoginPage = () => {
                 throw new Error('Token tidak ditemukan');
             }
         } catch (err: any) {
-            const msg = err?.response?.data?.message || 'Gagal login. Periksa kredensial.';
             setLoading(false);
-            
+
+            // Prefer field-specific validation messages if present
+            const errors = err?.response?.data?.errors;
+            let msg = err?.response?.data?.message || 'Gagal login. Periksa kredensial.';
+
+            if (errors) {
+                if (errors.password && errors.password.length) {
+                    msg = errors.password[0];
+                } else if (errors.username && errors.username.length) {
+                    msg = errors.username[0];
+                }
+            }
+
             // Tampilkan alert error dengan animasi
             Swal.fire({
                 icon: 'error',
@@ -76,7 +87,7 @@ const LoginPage = () => {
                 confirmButtonColor: '#3B4D3A',
                 iconColor: '#ef4444',
             });
-            
+
             // Hapus token dan header jika login gagal
             localStorage.removeItem('auth_token');
             delete api.defaults.headers.common['Authorization'];

@@ -16,11 +16,13 @@ class ProkerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Proker::with(['division', 'media', 'anggota.user']);
+        $query = Proker::with(['divisions', 'media', 'anggota.user']);
 
-        // Filter by division
+        // Filter by division (prokers that have the given division)
         if ($request->has('division_id')) {
-            $query->where('division_id', $request->division_id);
+            $query->whereHas('divisions', function ($q) use ($request) {
+                $q->where('divisions.id', $request->division_id);
+            });
         }
 
         // Filter by status
@@ -49,7 +51,8 @@ class ProkerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'division_id' => 'required|exists:divisions,id',
+            'division_ids' => 'required|array',
+            'division_ids.*' => 'exists:divisions,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'date' => 'required|date',
@@ -61,13 +64,17 @@ class ProkerController extends Controller
         ]);
 
         $proker = Proker::create([
-            'division_id' => $validated['division_id'],
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'date' => $validated['date'],
             'location' => $validated['location'] ?? null,
             'status' => $validated['status'] ?? 'planned',
         ]);
+
+        // attach divisions
+        if (!empty($validated['division_ids'])) {
+            $proker->divisions()->sync($validated['division_ids']);
+        }
 
         // Add anggota if provided
         if (isset($validated['anggota'])) {
@@ -83,7 +90,7 @@ class ProkerController extends Controller
         AuditLog::log('create_proker', "Created proker: {$proker->title}");
 
         return response()->json([
-            'proker' => $proker->load(['division', 'anggota.user']),
+            'proker' => $proker->load(['divisions', 'anggota.user']),
             'message' => 'Proker created successfully',
         ], 201);
     }
@@ -93,7 +100,7 @@ class ProkerController extends Controller
      */
     public function show(Proker $proker)
     {
-        return response()->json($proker->load(['division', 'media', 'anggota.user']));
+    return response()->json($proker->load(['divisions', 'media', 'anggota.user']));
     }
 
     /**
@@ -111,11 +118,14 @@ class ProkerController extends Controller
         ]);
 
         $proker->update($validated);
+        if ($request->has('division_ids')) {
+            $proker->divisions()->sync($request->division_ids ?: []);
+        }
 
         AuditLog::log('update_proker', "Updated proker: {$proker->title}");
 
         return response()->json([
-            'proker' => $proker->fresh()->load(['division', 'media', 'anggota.user']),
+            'proker' => $proker->fresh()->load(['divisions', 'media', 'anggota.user']),
             'message' => 'Proker updated successfully',
         ]);
     }
@@ -143,12 +153,16 @@ class ProkerController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'role' => 'nullable|string',
+            'division_id' => 'nullable|exists:divisions,id',
+            'position_id' => 'nullable|exists:positions,id',
         ]);
 
         $anggota = ProkerAnggota::create([
             'proker_id' => $proker->id,
             'user_id' => $validated['user_id'],
             'role' => $validated['role'] ?? null,
+            'division_id' => $validated['division_id'] ?? null,
+            'position_id' => $validated['position_id'] ?? null,
         ]);
 
         AuditLog::log('add_proker_anggota', "Added anggota to proker: {$proker->title}");
@@ -226,7 +240,7 @@ class ProkerController extends Controller
      */
     public function getAllMedia()
     {
-        $media = ProkerMedia::with('proker.division')
+        $media = ProkerMedia::with('proker.divisions')
             ->whereHas('proker', function($query) {
                 $query->where('status', 'done');
             })

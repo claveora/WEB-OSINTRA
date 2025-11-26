@@ -41,7 +41,7 @@ class DashboardController extends Controller
         ];
 
         // Recent prokers
-        $stats['recent_prokers'] = Proker::with('division')
+        $stats['recent_prokers'] = Proker::with('divisions')
             ->orderBy('date', 'desc')
             ->limit(5)
             ->get();

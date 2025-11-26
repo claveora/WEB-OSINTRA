@@ -16,7 +16,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             <div className="lg:ml-64">
                 <Topbar onMenuClick={() => setSidebarOpen(true)} />
                 
-                <main className="p-6">
+                <main className="p-6 osintra-content">
                     {children}
                 </main>
             </div>

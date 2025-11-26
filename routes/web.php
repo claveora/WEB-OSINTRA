@@ -50,19 +50,32 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ]);
     })->name('dashboard.divisions');
     
+    Route::get('/dashboard/positions', function () {
+        $user = auth()->user();
+        $role = strtolower(optional($user->role)->name ?? '');
+        // Only allow admin, ketua, wakil ketua to access Positions page
+        if (!in_array($role, ['admin', 'ketua', 'wakil ketua'])) {
+            abort(403);
+        }
+        return Inertia::render('dashboard/PositionsPage', [
+            'auth' => ['user' => $user],
+        ]);
+    })->name('dashboard.positions');
+    
     Route::get('/dashboard/users', function () {
         return Inertia::render('dashboard/UsersPage', [
             'auth' => ['user' => auth()->user()],
-            'users' => \App\Models\User::with(['role', 'division'])->get(),
+            'users' => \App\Models\User::with(['role', 'position'])->get(),
             'roles' => \App\Models\Role::all(),
-            'divisions' => \App\Models\Division::all()
+            'divisions' => \App\Models\Division::all(),
+            'positions' => \App\Models\Position::orderBy('id')->get()
         ]);
     })->name('dashboard.users');
     
     Route::get('/dashboard/prokers', function () {
         return Inertia::render('dashboard/ProkersPage', [
             'auth' => ['user' => auth()->user()],
-            'prokers' => \App\Models\Proker::with(['division'])->get(),
+            'prokers' => \App\Models\Proker::with(['divisions'])->get(),
             'divisions' => \App\Models\Division::all()
         ]);
     })->name('dashboard.prokers');
@@ -112,7 +125,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/dashboard/profile', function () {
         return Inertia::render('dashboard/ProfilePage', [
             'auth' => ['user' => auth()->user()],
-            'user' => auth()->user()->load(['role', 'division'])
+            'user' => auth()->user()->load(['role', 'position'])
         ]);
     })->name('dashboard.profile');
     

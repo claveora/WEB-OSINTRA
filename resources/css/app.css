@@ -141,4 +141,44 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    /* Force a readable dark text color for form controls (no light/dark mode)
+       NOTE: do NOT include buttons here so button text / avatar icons keep their original styling */
+    input, textarea, select {
+        color: #0f172a !important; /* slate-900 */
+        caret-color: #0f172a !important;
+    }
+
+    /* Placeholder styling (lighter, readable) */
+    input::placeholder, textarea::placeholder {
+        color: #94a3b8; /* slate-400 */
+    }
+
+    /* SweetAlert2 inline inputs (in case some dialogs still use it) */
+    .swal2-container .swal2-input, .swal2-container .swal2-textarea {
+        color: #0f172a !important;
+        background: #ffffff !important;
+    }
+
+    /* Target our custom modal specifically so we don't accidentally override button/avatar colors elsewhere */
+    .osintra-modal input,
+    .osintra-modal textarea,
+    .osintra-modal select {
+        color: #0f172a !important;
+        caret-color: #0f172a !important;
+    }
+
+    .osintra-modal input::placeholder,
+    .osintra-modal textarea::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Ensure table content and general page text inside dashboard content are readable */
+    .osintra-content table th,
+    .osintra-content table td,
+    .osintra-content p,
+    .osintra-content span,
+    .osintra-content div {
+        color: #0f172a !important;
+    }
 }

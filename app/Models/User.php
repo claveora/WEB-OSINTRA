@@ -28,7 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
-        'division_id',
+        'position_id',
         'profile_picture',
         'status',
     ];
@@ -68,11 +68,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the division that owns the user.
+     * Get the position (jabatan) of the user.
      */
-    public function division(): BelongsTo
+    public function position(): BelongsTo
     {
-        return $this->belongsTo(Division::class);
+        return $this->belongsTo(Position::class);
     }
 
     /**

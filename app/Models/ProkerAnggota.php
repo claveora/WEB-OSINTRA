@@ -15,6 +15,8 @@ class ProkerAnggota extends Model
     protected $fillable = [
         'proker_id',
         'user_id',
+        'division_id',
+        'position_id',
         'role',
     ];
 
@@ -32,5 +34,21 @@ class ProkerAnggota extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Division for this anggota within the proker
+     */
+    public function division(): BelongsTo
+    {
+        return $this->belongsTo(Division::class);
+    }
+
+    /**
+     * Position (jabatan) for this anggota within the proker
+     */
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class, 'position_id');
     }
 }

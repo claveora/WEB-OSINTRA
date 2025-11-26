@@ -21,11 +21,14 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-    const user = { name: 'Admin', role: { name: 'Admin' } };
+    // Try to fetch user from localStorage (set on login) or fallback
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    const user = stored ? JSON.parse(stored) : { name: 'Admin', role: { name: 'Admin' } };
 
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', module: 'Dashboard' },
-        { name: 'Divisi', icon: Building2, path: '/dashboard/divisions', module: 'Divisions' },
+    { name: 'Divisi', icon: Building2, path: '/dashboard/divisions', module: 'Divisions' },
+    { name: 'Posisi', icon: FileText, path: '/dashboard/positions', module: 'Positions' },
         { name: 'Pengguna', icon: Users, path: '/dashboard/users', module: 'Users' },
         { name: 'Program Kerja', icon: FolderKanban, path: '/dashboard/prokers', module: 'Prokers' },
         { name: 'Pesan', icon: Mail, path: '/dashboard/messages', module: 'Messages' },
@@ -35,7 +38,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         { name: 'Profil', icon: UserCircle, path: '/dashboard/profile', module: 'Profile' },
     ];
 
-    const filteredMenuItems = menuItems;
+    const roleName = (user?.role?.name || '').toLowerCase();
+    const allowedForPositions = ['admin', 'ketua', 'wakil ketua'];
+
+    const filteredMenuItems = menuItems.filter(item => {
+        // hide Positions menu unless user has allowed role
+        if (item.module === 'Positions') {
+            return allowedForPositions.includes(roleName);
+        }
+        return true;
+    });
 
     const handleLogout = async () => {
         try {
@@ -64,34 +76,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 }`}
             >
                 <div className="flex flex-col h-full">
-                    {/* Header */}
-                    <div className="p-6 border-b border-[#4A5F49]">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-3xl font-bold text-[#E8DCC3] tracking-wide">OSINTRA</h1>
-                                <p className="text-sm text-[#E8DCC3]/70 mt-1 font-medium">Management System</p>
+                    {/* Header (logo only to avoid duplicate title) */}
+                    <div className="p-4 border-b border-[#4A5F49] flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-[#E8DCC3] rounded-full flex items-center justify-center text-[#3B4D3A] font-bold text-lg shadow-lg">
+                                O
                             </div>
-                            <button
-                                onClick={onClose}
-                                className="lg:hidden text-[#E8DCC3] hover:text-white hover:bg-[#4A5F49] p-2 rounded-lg transition-all"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
+                            <div className="hidden sm:block">
+                                <p className="text-sm text-[#E8DCC3]/90 font-semibold">OSINTRA</p>
+                                <p className="text-xs text-[#E8DCC3]/60">Management System</p>
+                            </div>
                         </div>
+                        <button
+                            onClick={onClose}
+                            className="lg:hidden text-[#E8DCC3] hover:text-white hover:bg-[#4A5F49] p-2 rounded-lg transition-all"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
                     </div>
 
-                    {/* User Info */}
-                    <div className="p-6 border-b border-[#4A5F49] bg-[#2F3D2E]">
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-[#E8DCC3] rounded-full flex items-center justify-center text-[#3B4D3A] font-bold text-xl shadow-lg ring-2 ring-[#4A5F49]">
-                                {user?.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-semibold text-white text-lg">{user?.name}</p>
-                                <p className="text-sm text-[#E8DCC3]/80 font-medium">{user?.role?.name}</p>
-                            </div>
-                        </div>
-                    </div>
+                    {/* compact user info - removed to avoid duplication (Topbar shows user) */}
 
                     {/* Navigation */}
                     <nav className="flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-[#4A5F49] scrollbar-track-transparent">

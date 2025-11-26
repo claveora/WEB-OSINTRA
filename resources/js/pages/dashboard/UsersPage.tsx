@@ -3,6 +3,7 @@ import { Head, router } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Plus, Edit, Trash2, Search, Filter, UserCircle, Key, ToggleLeft, ToggleRight } from 'lucide-react';
 import type { User, Role, Division } from '@/types';
+import type { Position } from '@/types';
 import Swal from 'sweetalert2';
 import api from '@/lib/axios';
 
@@ -10,9 +11,10 @@ interface UsersPageProps {
     users: User[];
     roles: Role[];
     divisions: Division[];
+    positions: Position[];
 }
 
-const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divisions }) => {
+const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divisions, positions }) => {
     const [users, setUsers] = useState<User[]>(initialUsers || []);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterRole, setFilterRole] = useState<string>('');
@@ -25,7 +27,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
         email: '',
         password: '',
         role_id: '',
-        division_id: '',
+        position_id: '',
         status: 'active' as 'active' | 'inactive',
     });
     const [loading, setLoading] = useState(false);
@@ -35,8 +37,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
             user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.email.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesRole = !filterRole || user.role_id.toString() === filterRole;
-        const matchesDivision = !filterDivision || user.division_id?.toString() === filterDivision;
-        return matchesSearch && matchesRole && matchesDivision;
+        return matchesSearch && matchesRole;
     });
 
     const handleOpenModal = (user?: User) => {
@@ -48,7 +49,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
                 email: user.email,
                 password: '',
                 role_id: user.role_id.toString(),
-                division_id: user.division_id?.toString() || '',
+                position_id: user.position_id?.toString() || '',
                 status: user.status,
             });
         } else {
@@ -59,7 +60,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
                 email: '',
                 password: '',
                 role_id: '',
-                division_id: '',
+                position_id: '',
                 status: 'active',
             });
         }
@@ -212,16 +213,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
                                 ))}
                             </select>
 
-                            <select
-                                value={filterDivision}
-                                onChange={(e) => setFilterDivision(e.target.value)}
-                                className="px-4 py-3 bg-[#F5F5F5] border-2 border-transparent rounded-xl focus:border-[#3B4D3A] focus:bg-white outline-none transition-all"
-                            >
-                                <option value="">Semua Divisi</option>
-                                {divisions.map(division => (
-                                    <option key={division.id} value={division.id}>{division.name}</option>
-                                ))}
-                            </select>
+                            {/* Division filter removed (users no longer have division) */}
                         </div>
                     </div>
 
@@ -235,7 +227,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
                                         <th className="px-6 py-4 text-left text-sm font-bold text-[#3B4D3A]">Username</th>
                                         <th className="px-6 py-4 text-left text-sm font-bold text-[#3B4D3A]">Email</th>
                                         <th className="px-6 py-4 text-left text-sm font-bold text-[#3B4D3A]">Role</th>
-                                        <th className="px-6 py-4 text-left text-sm font-bold text-[#3B4D3A]">Divisi</th>
+                                           <th className="px-6 py-4 text-left text-sm font-bold text-[#3B4D3A]">Posisi</th>
                                         <th className="px-6 py-4 text-left text-sm font-bold text-[#3B4D3A]">Status</th>
                                         <th className="px-6 py-4 text-center text-sm font-bold text-[#3B4D3A]">Aksi</th>
                                     </tr>
@@ -258,7 +250,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
                                                     {user.role?.name}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-[#6E8BA3]">{user.division?.name || '-'}</td>
+                                                <td className="px-6 py-4 text-[#6E8BA3]">{user.position?.name || '-'}</td>
                                             <td className="px-6 py-4">
                                                 <button
                                                     onClick={() => handleToggleStatus(user)}
@@ -392,16 +384,16 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
 
                                     <div>
                                         <label className="block text-sm font-semibold text-[#3B4D3A] mb-2">
-                                            Divisi
+                                            Posisi
                                         </label>
                                         <select
-                                            value={formData.division_id}
-                                            onChange={(e) => setFormData({ ...formData, division_id: e.target.value })}
+                                            value={formData.position_id}
+                                            onChange={(e) => setFormData({ ...formData, position_id: e.target.value })}
                                             className="w-full px-4 py-3 bg-[#F5F5F5] border-2 border-transparent rounded-xl focus:border-[#3B4D3A] focus:bg-white outline-none transition-all"
                                         >
-                                            <option value="">Pilih Divisi</option>
-                                            {divisions.map(division => (
-                                                <option key={division.id} value={division.id}>{division.name}</option>
+                                            <option value="">Pilih Posisi</option>
+                                            {positions.map(pos => (
+                                                <option key={pos.id} value={pos.id}>{pos.name}</option>
                                             ))}
                                         </select>
                                     </div>

@@ -67,4 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/roles', [SettingController::class, 'getRoles']);
     Route::put('/roles/{role}/permissions', [SettingController::class, 'updateRolePermissions']);
     Route::get('/audit-logs', [SettingController::class, 'getAuditLogs']);
+    
+    // Positions
+    Route::apiResource('positions', \App\Http\Controllers\Api\PositionController::class)->except(['show']);
 });

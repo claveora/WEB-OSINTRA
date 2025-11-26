@@ -11,7 +11,7 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
     return (
         <header className="bg-white border-b-2 border-[#E8DCC3] px-6 py-4 sticky top-0 z-30 shadow-sm backdrop-blur-sm bg-white/95">
             <div className="flex items-center justify-between">
-                {/* Left Section */}
+                {/* Left Section - only menu button (no page title to keep topbar clean) */}
                 <div className="flex items-center gap-4">
                     <button
                         onClick={onMenuClick}
@@ -20,14 +20,6 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
                     >
                         <Menu className="w-6 h-6" />
                     </button>
-                    <div>
-                        <h2 className="text-2xl font-bold text-[#3B4D3A]">
-                            {document.title.replace(' - OSISVISKA', '') || 'Dashboard'}
-                        </h2>
-                        <p className="text-xs text-[#6E8BA3] mt-0.5 font-medium hidden sm:block">
-                            Sistem Manajemen OSIS
-                        </p>
-                    </div>
                 </div>
 
                 {/* Right Section */}

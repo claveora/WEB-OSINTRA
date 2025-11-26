@@ -5,10 +5,12 @@ export interface User {
     email: string;
     role_id: number;
     division_id?: number;
+    position_id?: number;
     profile_picture?: string;
     status: 'active' | 'inactive';
     role?: Role;
     division?: Division;
+    position?: Position;
 }
 
 export interface Role {
@@ -34,6 +36,12 @@ export interface Division {
     description?: string;
     users_count?: number;
     prokers_count?: number;
+}
+
+export interface Position {
+    id: number;
+    name: string;
+    description?: string;
 }
 
 export interface Proker {

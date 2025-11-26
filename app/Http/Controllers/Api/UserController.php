@@ -15,16 +15,20 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['role', 'division']);
+    $query = User::with(['role', 'position']);
 
         // Filter by role
         if ($request->has('role_id')) {
             $query->where('role_id', $request->role_id);
         }
 
-        // Filter by division
+        // Filter by division (users who participate in prokers for the given division)
         if ($request->has('division_id')) {
-            $query->where('division_id', $request->division_id);
+            $query->whereHas('prokers', function ($q) use ($request) {
+                $q->whereHas('divisions', function ($q2) use ($request) {
+                    $q2->where('divisions.id', $request->division_id);
+                });
+            });
         }
 
         // Filter by status
@@ -58,19 +62,23 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8',
             'role_id' => 'required|exists:roles,id',
-            'division_id' => 'nullable|exists:divisions,id',
+            'position_id' => 'nullable|exists:positions,id',
+            'profile_picture' => 'nullable|string',
             'profile_picture' => 'nullable|string',
             'status' => 'sometimes|in:active,inactive',
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+    $validated['password'] = Hash::make($validated['password']);
 
-        $user = User::create($validated);
+    // remove any division_id if present
+    unset($validated['division_id']);
+
+    $user = User::create($validated);
 
         AuditLog::log('create_user', "Created user: {$user->name}");
 
         return response()->json([
-            'user' => $user->load(['role', 'division']),
+            'user' => $user->load(['role', 'position']),
             'message' => 'User created successfully',
         ], 201);
     }
@@ -80,7 +88,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json($user->load(['role', 'division', 'prokers']));
+    return response()->json($user->load(['role', 'position', 'prokers']));
     }
 
     /**
@@ -94,7 +102,8 @@ class UserController extends Controller
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'password' => 'sometimes|string|min:8',
             'role_id' => 'sometimes|exists:roles,id',
-            'division_id' => 'nullable|exists:divisions,id',
+            'position_id' => 'nullable|exists:positions,id',
+            'profile_picture' => 'nullable|string',
             'profile_picture' => 'nullable|string',
             'status' => 'sometimes|in:active,inactive',
         ]);
@@ -103,12 +112,14 @@ class UserController extends Controller
             $validated['password'] = Hash::make($validated['password']);
         }
 
-        $user->update($validated);
+    // ensure division_id not set on users
+    unset($validated['division_id']);
+    $user->update($validated);
 
         AuditLog::log('update_user', "Updated user: {$user->name}");
 
         return response()->json([
-            'user' => $user->fresh()->load(['role', 'division']),
+            'user' => $user->fresh()->load(['role', 'position']),
             'message' => 'User updated successfully',
         ]);
     }

@@ -13,7 +13,6 @@ class Proker extends Model
     use HasFactory;
 
     protected $fillable = [
-        'division_id',
         'title',
         'description',
         'date',
@@ -26,11 +25,11 @@ class Proker extends Model
     ];
 
     /**
-     * Get the division that owns the proker.
+     * The divisions related to this proker (many-to-many).
      */
-    public function division(): BelongsTo
+    public function divisions(): BelongsToMany
     {
-        return $this->belongsTo(Division::class);
+        return $this->belongsToMany(Division::class, 'proker_division');
     }
 
     /**

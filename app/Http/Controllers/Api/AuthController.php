@@ -25,9 +25,15 @@ class AuthController extends Controller
             ->orWhere('email', $request->username)
             ->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user) {
             throw ValidationException::withMessages([
-                'username' => ['The provided credentials are incorrect.'],
+                'username' => ['Username or email not found.'],
+            ]);
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => ['The password is incorrect.'],
             ]);
         }
 
@@ -44,7 +50,7 @@ class AuthController extends Controller
         AuditLog::log('login', 'User logged in', $user->id);
 
         return response()->json([
-            'user' => $user->load(['role', 'division']),
+            'user' => $user->load(['role', 'position']),
             'token' => $token,
         ]);
     }
@@ -69,7 +75,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return response()->json([
-            'user' => $request->user()->load(['role.permissions', 'division']),
+            'user' => $request->user()->load(['role.permissions', 'position']),
         ]);
     }
 
@@ -91,7 +97,7 @@ class AuthController extends Controller
         AuditLog::log('update_profile', 'User updated their profile');
 
         return response()->json([
-            'user' => $user->fresh()->load(['role', 'division']),
+            'user' => $user->fresh()->load(['role', 'position']),
             'message' => 'Profile updated successfully',
         ]);
     }
