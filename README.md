@@ -203,10 +203,11 @@ Pengaturan global aplikasi:
 - Preferensi tampilan  
 !Masih dalam taham pengembangan!
 
-📌 **Status Pengembangan**
+####  **Status Pengembangan**
 OSINTRA masih dalam tahap pengembangan aktif, dengan fokus pada:
--Penyempurnaan dashboard internal.
--Integrasi penuh role & permission.
--Penyempurnaan desain halaman publik.
--Dokumentasi dan pengujian.
+
+-Penyempurnaan dashboard internal
+-Integrasi penuh role & permission
+-Penyempurnaan desain halaman publik
+-Dokumentasi dan pengujian
 
