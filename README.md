@@ -208,6 +208,8 @@ OSINTRA masih dalam tahap pengembangan aktif, dengan fokus pada:
 
 -Penyempurnaan dashboard internal
 -Integrasi penuh role & permission
--Penyempurnaan desain halaman publik
+-Penyempurnaan desain UI halaman publik
 -Dokumentasi dan pengujian
+
+Dibuat oleh Roodiext dengan kolaborasi bersama ClaveoraDev.
 
