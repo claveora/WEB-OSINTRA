@@ -14,15 +14,32 @@ const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
   const [activeLink, setActiveLink] = useState('/');
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 50);
+    const onScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      setSolid(currentScrollY > 50);
+      
+      if (currentScrollY < 50) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+    
     window.addEventListener('scroll', onScroll);
     
     setActiveLink(window.location.pathname);
     
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const isActive = (href: string) => activeLink === href;
 
@@ -34,7 +51,8 @@ const Navbar: React.FC = () => {
           backgroundColor: solid ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.95)',
           backdropFilter: 'blur(12px)',
           borderBottom: `1px solid ${solid ? 'rgba(232,220,195,0.4)' : 'rgba(232,220,195,0.2)'}`,
-          boxShadow: solid ? '0 4px 20px rgba(59, 77, 58, 0.08)' : '0 2px 10px rgba(0, 0, 0, 0.05)'
+          boxShadow: solid ? '0 4px 20px rgba(59, 77, 58, 0.08)' : '0 2px 10px rgba(0, 0, 0, 0.05)',
+          transform: isVisible ? 'translateY(0)' : 'translateY(-100%)'
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4">

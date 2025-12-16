@@ -26,6 +26,12 @@ class RoleSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'name' => 'Wakil Ketua OSIS',
+                'description' => 'Wakil Ketua OSIS dengan akses ke Prokers, Messages, dan Divisions',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'name' => 'Sekretaris',
                 'description' => 'Sekretaris dengan akses ke Messages dan Divisions',
                 'created_at' => now(),
@@ -76,6 +82,7 @@ class RoleSeeder extends Seeder
         // Lookup role IDs by name to avoid hardcoded IDs
         $roleAdmin = DB::table('roles')->where('name', 'Admin')->value('id');
         $roleKetua = DB::table('roles')->where('name', 'Ketua OSIS')->value('id');
+        $roleWakilKetua = DB::table('roles')->where('name', 'Wakil Ketua OSIS')->value('id');
         $roleSekretaris = DB::table('roles')->where('name', 'Sekretaris')->value('id');
         $roleBendahara = DB::table('roles')->where('name', 'Bendahara')->value('id');
         $roleAnggota = DB::table('roles')->where('name', 'Anggota')->value('id');
@@ -116,6 +123,29 @@ class RoleSeeder extends Seeder
                 if (! $permExists) {
                     DB::table('role_permissions')->insert([
                         'role_id' => $roleKetua,
+                        'module_name' => $module,
+                        'can_view' => true,
+                        'can_create' => $module !== 'Dashboard',
+                        'can_edit' => $module !== 'Dashboard',
+                        'can_delete' => $module !== 'Dashboard',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        }
+
+        // Wakil Ketua OSIS - Prokers, Messages, Divisions
+        $wakilKetuaModules = ['Dashboard', 'Prokers', 'Messages', 'Divisions', 'Profile'];
+        if ($roleWakilKetua) {
+            foreach ($wakilKetuaModules as $module) {
+                $permExists = DB::table('role_permissions')
+                    ->where('role_id', $roleWakilKetua)
+                    ->where('module_name', $module)
+                    ->exists();
+                if (! $permExists) {
+                    DB::table('role_permissions')->insert([
+                        'role_id' => $roleWakilKetua,
                         'module_name' => $module,
                         'can_view' => true,
                         'can_create' => $module !== 'Dashboard',

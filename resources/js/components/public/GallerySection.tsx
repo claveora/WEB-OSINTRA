@@ -91,7 +91,7 @@ const GallerySection: React.FC = () => {
 
                 {media.length === 0 && (
                     <div className="text-center py-12">
-                        <p style={{ color: '#6E8BA3' }}>Belum ada media yang tersedia</p>
+                        <p style={{ color: '#6E8BA3' }}>Belum ada media yang tersedia. Coming Soon</p>
                     </div>
                 )}
             </div>

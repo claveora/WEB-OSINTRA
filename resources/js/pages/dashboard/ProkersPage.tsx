@@ -260,71 +260,71 @@ const ProkersPage: React.FC<ProkersPageProps> = ({ prokers: initialProkers, divi
                         {filteredProkers.map((proker) => (
                             <div
                                 key={proker.id}
-                                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden border-l-4 border-[#3B4D3A]"
+                                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden flex"
                             >
-                                <div className="p-6">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <h3 className="text-xl font-bold text-[#3B4D3A] line-clamp-2 flex-1">
+                                {/* Status Color Bar - Left Side */}
+                                <div
+                                    className={`w-1 transition-all ${
+                                        proker.status === 'done' ? 'bg-green-500' :
+                                        proker.status === 'ongoing' ? 'bg-yellow-500' :
+                                        'bg-blue-500'
+                                    }`}
+                                />
+
+                                <div className="flex-1 p-6 flex flex-col">
+                                    <div className="flex items-start justify-between mb-2 gap-3">
+                                        <h3 className="text-lg font-bold text-[#3B4D3A] flex-1">
                                             {proker.title}
                                         </h3>
-                                        <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide border ${getStatusColor(proker.status)}`}>
+                                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wide border whitespace-nowrap flex-shrink-0 ${getStatusColor(proker.status)}`}>
                                             {getStatusLabel(proker.status)}
                                         </span>
                                     </div>
 
-                                    <p className="text-sm text-[#6E8BA3] mb-4 line-clamp-2">
+                                    <p className="text-sm text-[#6E8BA3] mb-4 leading-relaxed flex-grow">
                                         {proker.description || 'Tidak ada deskripsi'}
                                     </p>
 
-                                    <div className="space-y-2 mb-4">
+                                    <div className="space-y-2 mb-5">
                                         <div className="flex items-center gap-2 text-sm text-[#6E8BA3]">
-                                            <Users className="w-4 h-4" />
-                                            <span>{proker.division?.name}</span>
+                                            <Users className="w-4 h-4 flex-shrink-0" />
+                                            <span className="line-clamp-1">{proker.division?.name}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-[#6E8BA3]">
-                                            <Calendar className="w-4 h-4" />
+                                            <Calendar className="w-4 h-4 flex-shrink-0" />
                                             <span>{new Date(proker.date).toLocaleDateString('id-ID')}</span>
                                         </div>
                                         {proker.location && (
                                             <div className="flex items-center gap-2 text-sm text-[#6E8BA3]">
-                                                <MapPin className="w-4 h-4" />
+                                                <MapPin className="w-4 h-4 flex-shrink-0" />
                                                 <span className="line-clamp-1">{proker.location}</span>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 pt-2 border-t border-gray-100">
                                         <button
                                             onClick={() => router.visit(`/dashboard/prokers/${proker.id}`)}
-                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#E8DCC3] text-[#3B4D3A] rounded-lg hover:bg-[#d5c9b0] transition-all font-medium"
+                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#E8DCC3] text-[#3B4D3A] rounded-lg hover:bg-[#d5c9b0] transition-all font-medium text-sm"
                                         >
                                             <Eye className="w-4 h-4" />
                                             Detail
                                         </button>
                                         <button
                                             onClick={() => handleOpenModal(proker)}
-                                            className="p-2 bg-[#E8DCC3] text-[#3B4D3A] rounded-lg hover:bg-[#d5c9b0] transition-all"
+                                            className="p-2.5 bg-[#E8DCC3] text-[#3B4D3A] rounded-lg hover:bg-[#d5c9b0] transition-all"
+                                            title="Edit"
                                         >
                                             <Edit className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(proker)}
-                                            className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all"
+                                            className="p-2.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all"
+                                            title="Hapus"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
-                                </div>
-
-                                {/* Progress Bar */}
-                                <div className="h-2 bg-[#F5F5F5]">
-                                    <div
-                                        className={`h-full transition-all ${
-                                            proker.status === 'done' ? 'bg-green-500 w-full' :
-                                            proker.status === 'ongoing' ? 'bg-yellow-500 w-2/3' :
-                                            'bg-blue-500 w-1/3'
-                                        }`}
-                                    />
                                 </div>
                             </div>
                         ))}

@@ -237,20 +237,20 @@ const UsersPage: React.FC<UsersPageProps> = ({ users: initialUsers, roles, divis
                                         <tr key={user.id} className="hover:bg-[#F5F5F5] transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-[#E8DCC3] rounded-full flex items-center justify-center text-[#3B4D3A] font-bold">
+                                                    <div className="w-10 h-10 bg-[#E8DCC3] rounded-full flex items-center justify-center text-[#3B4D3A] font-bold flex-shrink-0">
                                                         {user.name.charAt(0).toUpperCase()}
                                                     </div>
-                                                    <span className="font-semibold text-[#1E1E1E]">{user.name}</span>
+                                                    <span className="font-semibold text-[#1E1E1E] truncate" title={user.name}>{user.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-[#6E8BA3]">{user.username}</td>
-                                            <td className="px-6 py-4 text-[#6E8BA3]">{user.email}</td>
+                                            <td className="px-6 py-4 text-[#6E8BA3] max-w-xs truncate" title={user.username}>{user.username}</td>
+                                            <td className="px-6 py-4 text-[#6E8BA3] max-w-xs truncate" title={user.email}>{user.email}</td>
                                             <td className="px-6 py-4">
-                                                <span className="px-3 py-1 bg-[#E8DCC3] text-[#3B4D3A] rounded-lg text-sm font-semibold">
+                                                <span className="px-3 py-1 bg-[#E8DCC3] text-[#3B4D3A] rounded-lg text-sm font-semibold whitespace-nowrap">
                                                     {user.role?.name}
                                                 </span>
                                             </td>
-                                                <td className="px-6 py-4 text-[#6E8BA3]">{user.position?.name || '-'}</td>
+                                                <td className="px-6 py-4 text-[#6E8BA3] max-w-xs truncate" title={user.position?.name || '-'}>{user.position?.name || '-'}</td>
                                             <td className="px-6 py-4">
                                                 <button
                                                     onClick={() => handleToggleStatus(user)}

@@ -4,6 +4,7 @@ import DashboardLayout from '@/layouts/DashboardLayout';
 import api from '@/lib/axios';
 import Swal from 'sweetalert2';
 import Modal from '@/components/ui/Modal';
+import { Edit, Trash2 } from 'lucide-react';
 
 const PositionsPage: React.FC = () => {
     const [positions, setPositions] = useState<any[]>([]);
@@ -98,31 +99,51 @@ const PositionsPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl shadow">
-                        {loading ? <p>Loading...</p> : (
-                            <table className="w-full text-left">
-                                <thead>
-                                    <tr>
-                                        <th className="py-2">#</th>
-                                        <th>Name</th>
-                                        <th>Deskripsi</th>
-                                        <th className="text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {positions.map((p, idx) => (
-                                        <tr key={p.id} className="border-t">
-                                            <td className="py-3">{idx+1}</td>
-                                            <td>{p.name}</td>
-                                            <td>{p.description ?? '-'}</td>
-                                            <td className="text-right">
-                                                <button onClick={() => openModal(p)} className="px-3 py-1 mr-2 border rounded">Edit</button>
-                                                <button onClick={() => remove(p.id)} className="px-3 py-1 bg-red-500 text-white rounded">Hapus</button>
-                                            </td>
+                    <div className="bg-white rounded-xl shadow overflow-hidden">
+                        {loading ? <p className="text-[#6E8BA3] p-6">Loading...</p> : (
+                            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-[#E8DCC3] scrollbar-track-[#F5F5F5]">
+                                <table className="w-full text-left min-w-max">
+                                    <thead>
+                                        <tr className="border-b-2 border-[#E8DCC3] bg-[#F5F5F5]">
+                                            <th className="px-6 py-4 text-[#3B4D3A] font-semibold w-16">#</th>
+                                            <th className="px-6 py-4 text-[#3B4D3A] font-semibold min-w-48">Nama Posisi</th>
+                                            <th className="px-6 py-4 text-[#3B4D3A] font-semibold min-w-64">Deskripsi</th>
+                                            <th className="px-6 py-4 text-right text-[#3B4D3A] font-semibold min-w-56">Aksi</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {positions.map((p, idx) => (
+                                            <tr key={p.id} className="hover:bg-[#F5F5F5] transition-colors">
+                                                <td className="px-6 py-4 text-[#6E8BA3] font-semibold text-center w-16">
+                                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-[#E8DCC3] text-[#3B4D3A] rounded-full text-sm font-bold">
+                                                        {idx+1}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-[#3B4D3A] font-semibold whitespace-nowrap">{p.name}</td>
+                                                <td className="px-6 py-4 text-[#6E8BA3] text-sm" title={p.description || '-'}>{p.description ?? '-'}</td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button 
+                                                            onClick={() => openModal(p)} 
+                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-[#E8DCC3] text-[#3B4D3A] rounded-lg hover:bg-[#d5c9b0] transition-all font-medium text-sm whitespace-nowrap"
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                            Edit
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => remove(p.id)} 
+                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all font-medium text-sm whitespace-nowrap"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                            Hapus
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
                 </div>

@@ -41,9 +41,6 @@ const FooterSection: React.FC = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="/login" className="transition-colors text-[#D0C5B9] hover:text-white">
-                                    Login Dashboard
-                                </a>
                             </li>
                         </ul>
                     </div>
@@ -71,9 +68,14 @@ const FooterSection: React.FC = () => {
                 {/* Social Media */}
                 <div className="pt-8 border-t border-[rgba(232,220,195,0.3)]">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-sm text-[#D0C5B9]">
-                        © {currentYear} OSIS SMKN 6 Surakarta. All rights reserved.
-                        </p>
+                        <div>
+                            <p className="text-sm text-[#D0C5B9]">
+                                © {currentYear} OSIS SMKN 6 Surakarta. All rights reserved.
+                            </p>
+                            <p className="text-xs mt-2" style={{ color: 'rgba(208, 197, 185, 0.7)' }}>
+                                Developed by <a href="https://github.com/Roodiext" className="font-semibold hover:text-white transition-colors">RoodiextProduction</a> & <a href="https://github.com/claveora" className="font-semibold hover:text-white transition-colors">ClaveoraDev</a>
+                            </p>
+                        </div>
                         <div className="flex gap-4">
                         <a
                             href="https://www.instagram.com/osis_smkn6ska?igsh=MWcyeDBmc3Uwa3F2YQ=="

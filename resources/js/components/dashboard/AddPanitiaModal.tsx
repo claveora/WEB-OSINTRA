@@ -41,8 +41,7 @@ const AddPanitiaModal: React.FC<AddPanitiaModalProps> = ({
     const [userSuggestions, setUserSuggestions] = useState<User[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedDivision, setSelectedDivision] = useState<string>('');
-    const [selectedPosition, setSelectedPosition] = useState<string>('');
-    const [role, setRole] = useState('');
+    const [selectedRole, setSelectedRole] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
 
@@ -57,14 +56,27 @@ const AddPanitiaModal: React.FC<AddPanitiaModalProps> = ({
         const searchUsers = async () => {
             try {
                 setSearchLoading(true);
-                const response = await api.get('/users/search', {
-                    params: { q: searchQuery },
+                const response = await api.get('/users', {
+                    params: { search: searchQuery },
                 });
-                setUserSuggestions(response.data.data || []);
-                setShowSuggestions(true);
+                
+                // Handle paginated response from /users endpoint
+                let users = [];
+                if (response.data.data && Array.isArray(response.data.data)) {
+                    users = response.data.data;
+                } else if (Array.isArray(response.data)) {
+                    users = response.data;
+                }
+                
+                // Filter to only active users with required fields
+                const filteredUsers = users.filter((u: any) => u.status === 'active' || !u.status).slice(0, 10);
+                
+                setUserSuggestions(filteredUsers);
+                setShowSuggestions(filteredUsers.length > 0);
             } catch (error) {
-                console.error(error);
+                console.error('Search error:', error);
                 setUserSuggestions([]);
+                setShowSuggestions(false);
             } finally {
                 setSearchLoading(false);
             }
@@ -99,8 +111,7 @@ const AddPanitiaModal: React.FC<AddPanitiaModalProps> = ({
             await api.post(`/prokers/${prokerId}/anggota`, {
                 user_id: selectedUser.id,
                 division_id: parseInt(selectedDivision),
-                position_id: selectedPosition ? parseInt(selectedPosition) : null,
-                role: role || null,
+                role: selectedRole || null,
             });
 
             Swal.fire('Berhasil!', 'Panitia berhasil ditambahkan', 'success');
@@ -119,8 +130,7 @@ const AddPanitiaModal: React.FC<AddPanitiaModalProps> = ({
         setSearchQuery('');
         setSelectedUser(null);
         setSelectedDivision('');
-        setSelectedPosition('');
-        setRole('');
+        setSelectedRole('');
         setUserSuggestions([]);
         setShowSuggestions(false);
     };
@@ -215,37 +225,20 @@ const AddPanitiaModal: React.FC<AddPanitiaModalProps> = ({
                         </select>
                     </div>
 
-                    {/* Position Select */}
+                    {/* Role Select */}
                     <div>
                         <label className="block text-sm font-semibold text-[#3B4D3A] mb-2">
-                            Posisi (Opsional)
+                            Peran (Opsional)
                         </label>
                         <select
-                            value={selectedPosition}
-                            onChange={(e) => setSelectedPosition(e.target.value)}
+                            value={selectedRole}
+                            onChange={(e) => setSelectedRole(e.target.value)}
                             className="w-full px-4 py-3 bg-[#F5F5F5] border-2 border-transparent rounded-xl focus:border-[#3B4D3A] focus:bg-white outline-none transition-all"
                         >
-                            <option value="">Tidak Ada Posisi Khusus</option>
-                            {positions.map(pos => (
-                                <option key={pos.id} value={pos.id}>
-                                    {pos.name}
-                                </option>
-                            ))}
+                            <option value="">Pilih Peran</option>
+                            <option value="Koordinator">Koordinator</option>
+                            <option value="Anggota">Anggota</option>
                         </select>
-                    </div>
-
-                    {/* Role Input */}
-                    <div>
-                        <label className="block text-sm font-semibold text-[#3B4D3A] mb-2">
-                            Role/Peran (Opsional)
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Contoh: Koordinator, Anggota, dll"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                            className="w-full px-4 py-3 bg-[#F5F5F5] border-2 border-transparent rounded-xl focus:border-[#3B4D3A] focus:bg-white outline-none transition-all"
-                        />
                     </div>
 
                     {/* Buttons */}
