@@ -10,7 +10,7 @@ const FooterSection: React.FC = () => {
                 <div className="grid md:grid-cols-3 gap-8 mb-8">
                     {/* About */}
                     <div>
-                        <h3 className="text-2xl font-bold mb-4 text-white">OSINTRA</h3>
+                        <h3 className="text-2xl font-bold mb-4 text-white">OSVIS</h3>
                         <p className="leading-relaxed" style={{ color: '#D0C5B9' }}>
                             Sistem Manajemen OSIS SMKN 6 Surakarta yang modern dan profesional untuk mengelola kegiatan organisasi siswa.
                         </p>

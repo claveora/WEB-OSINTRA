@@ -16,13 +16,14 @@ const Navbar: React.FC = () => {
   const [activeLink, setActiveLink] = useState('/');
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [logoClickCount, setLogoClickCount] = useState(0);
 
   useEffect(() => {
     const onScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       setSolid(currentScrollY > 50);
-      
+
       if (currentScrollY < 50) {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
@@ -30,14 +31,14 @@ const Navbar: React.FC = () => {
       } else {
         setIsVisible(true);
       }
-      
+
       setLastScrollY(currentScrollY);
     };
-    
+
     window.addEventListener('scroll', onScroll);
-    
+
     setActiveLink(window.location.pathname);
-    
+
     return () => window.removeEventListener('scroll', onScroll);
   }, [lastScrollY]);
 
@@ -45,7 +46,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <header 
+      <header
         className="fixed inset-x-0 top-0 z-50 transition-all duration-300"
         style={{
           backgroundColor: solid ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.95)',
@@ -58,13 +59,21 @@ const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a 
-              href="/" 
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                const newCount = logoClickCount + 1;
+                setLogoClickCount(newCount);
+                if (newCount === 6) {
+                  window.location.href = '/dashboard';
+                }
+              }}
               className="group flex items-center gap-3 font-bold text-xl md:text-2xl transition-transform duration-300 hover:scale-105"
             >
-              <img 
-                src="/build/assets/osis-logo-mBAtwUV-.png" 
-                alt="OSIS Logo" 
+              <img
+                src="/build/assets/osis-logo-mBAtwUV-.png"
+                alt="OSIS Logo"
                 className="w-10 h-10 object-contain"
               />
             </a>
@@ -77,24 +86,24 @@ const Navbar: React.FC = () => {
                   href={l.href}
                   onClick={() => setActiveLink(l.href)}
                   className="relative px-4 py-2 rounded-xl transition-all duration-300 font-medium group"
-                  style={{ 
+                  style={{
                     color: isActive(l.href) ? '#3B4D3A' : '#6E8BA3',
                     fontWeight: isActive(l.href) ? '600' : '500'
                   }}
                 >
                   {l.label}
-                  
+
                   {/* Hover Effect */}
-                  <span 
+                  <span
                     className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
-                    style={{ 
+                    style={{
                       backgroundColor: 'rgba(232,220,195,0.2)'
                     }}
                   />
-                  
+
                   {/* Active Indicator */}
                   {isActive(l.href) && (
-                    <span 
+                    <span
                       className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 rounded-full"
                       style={{ backgroundColor: '#3B4D3A' }}
                     />
@@ -105,18 +114,7 @@ const Navbar: React.FC = () => {
 
             {/* Right Section */}
             <div className="flex items-center gap-4">
-              {/* CTA Button - Desktop */}
-              <a
-                href="/login"
-                className="hidden lg:flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-xl transform hover:-translate-y-0.5"
-                style={{ 
-                  background: 'linear-gradient(135deg, #E8DCC3 0%, #d4c4a8 100%)',
-                  color: '#1E1E1E'
-                }}
-              >
-                <span>Masuk</span>
-                <ChevronRight className="w-4 h-4" />
-              </a>
+
 
               {/* Mobile Menu Button */}
               <button
@@ -133,38 +131,38 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         {open && (
-          <div 
+          <div
             className="lg:hidden border-t animate-slide-down"
-            style={{ 
+            style={{
               backgroundColor: 'rgba(255,255,255,0.98)',
               borderColor: 'rgba(232,220,195,0.3)'
             }}
           >
             <div className="max-w-7xl mx-auto px-6 py-4 space-y-1">
               {links.map((l, index) => (
-                <a 
-                  key={l.href} 
+                <a
+                  key={l.href}
                   href={l.href}
                   onClick={() => {
                     setActiveLink(l.href);
                     setOpen(false);
                   }}
                   className="group relative block px-4 py-3 rounded-xl font-medium transition-all duration-300"
-                  style={{ 
+                  style={{
                     color: '#3B4D3A',
                     backgroundColor: isActive(l.href) ? 'rgba(232,220,195,0.3)' : 'transparent',
                     animationDelay: `${index * 50}ms`
                   }}
                 >
-                  <span 
+                  <span
                     className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
                     style={{ backgroundColor: 'rgba(232,220,195,0.2)' }}
                   />
-                  
+
                   <div className="flex items-center justify-between">
                     <span>{l.label}</span>
                     {isActive(l.href) && (
-                      <div 
+                      <div
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: '#3B4D3A' }}
                       />
@@ -172,24 +170,8 @@ const Navbar: React.FC = () => {
                   </div>
                 </a>
               ))}
-              
-              <div 
-                className="my-3 h-px"
-                style={{ backgroundColor: 'rgba(232,220,195,0.3)' }}
-              />
-              
-              <a
-                href="/login"
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-xl"
-                style={{ 
-                  background: 'linear-gradient(135deg, #E8DCC3 0%, #d4c4a8 100%)',
-                  color: '#1E1E1E'
-                }}
-                onClick={() => setOpen(false)}
-              >
-                <span>Masuk</span>
-                <ChevronRight className="w-4 h-4" />
-              </a>
+
+
             </div>
           </div>
         )}

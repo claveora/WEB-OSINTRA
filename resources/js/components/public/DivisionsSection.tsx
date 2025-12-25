@@ -7,6 +7,7 @@ const DivisionsSection: React.FC = () => {
     const [positions, setPositions] = useState<Position[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDivision, setSelectedDivision] = useState<Position | null>(null);
 
     useEffect(() => {
         const fetchPositions = async () => {
@@ -32,7 +33,7 @@ const DivisionsSection: React.FC = () => {
 
         positions.forEach(position => {
             const nameLower = position.name.toLowerCase();
-            
+
             if (nameLower.includes('ketua') && !nameLower.includes('wakil')) {
                 structure.top.unshift(position);
             } else if (nameLower.includes('wakil')) {
@@ -68,6 +69,65 @@ const DivisionsSection: React.FC = () => {
         return Award;
     };
 
+    // Modal Component untuk Detail Single Division
+    const DivisionDetailModal = ({ isOpen, onClose, division }: { isOpen: boolean; onClose: () => void; division: Position | null }) => {
+        if (!isOpen || !division) return null;
+
+        const IconComponent = getIconForPosition(division.name);
+
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                {/* Backdrop */}
+                <div
+                    className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+                    onClick={onClose}
+                />
+
+                {/* Modal Content */}
+                <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl animate-in zoom-in-95 fade-in duration-300">
+                    <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(59, 77, 58, 0.1)' }}>
+                                <IconComponent className="w-6 h-6" style={{ color: '#3B4D3A' }} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold" style={{ color: '#3B4D3A' }}>{division.name}</h3>
+                                <p className="text-sm text-gray-500">Detail Bidang</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                            <X className="w-6 h-6 text-gray-500" />
+                        </button>
+                    </div>
+
+                    <div className="p-6">
+                        <div className="space-y-4">
+                            <div>
+                                <h4 className="font-semibold text-gray-900 mb-2">Deskripsi</h4>
+                                <p className="text-gray-600 leading-relaxed">
+                                    {division.description || 'Bertanggung jawab atas pelaksanaan program kerja spesifik di bidangnya.'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+                        <button
+                            onClick={onClose}
+                            className="w-full py-3 rounded-xl font-semibold text-white transition-transform active:scale-95"
+                            style={{ backgroundColor: '#3B4D3A' }}
+                        >
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     // Modal Component untuk Mobile
     const DivisionsModal = ({ isOpen, onClose, divisions }: { isOpen: boolean; onClose: () => void; divisions: Position[] }) => {
         if (!isOpen) return null;
@@ -75,11 +135,11 @@ const DivisionsSection: React.FC = () => {
         return (
             <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
                 {/* Backdrop */}
-                <div 
+                <div
                     className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
                     onClick={onClose}
                 />
-                
+
                 {/* Modal Content */}
                 <div className="relative w-full max-w-2xl bg-white md:rounded-2xl rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom-10 fade-in duration-300">
                     <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white md:rounded-t-2xl rounded-t-3xl z-10">
@@ -87,7 +147,7 @@ const DivisionsSection: React.FC = () => {
                             <h3 className="text-xl font-bold" style={{ color: '#3B4D3A' }}>Daftar Sie Bidang</h3>
                             <p className="text-sm text-gray-500">Divisi pelaksana program kerja</p>
                         </div>
-                        <button 
+                        <button
                             onClick={onClose}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                         >
@@ -100,7 +160,7 @@ const DivisionsSection: React.FC = () => {
                             {divisions.map((position) => {
                                 const IconComponent = getIconForPosition(position.name);
                                 return (
-                                    <div 
+                                    <div
                                         key={position.id}
                                         className="flex items-start gap-4 p-4 rounded-xl border border-gray-100 shadow-sm bg-gray-50/50"
                                     >
@@ -118,9 +178,9 @@ const DivisionsSection: React.FC = () => {
                             })}
                         </div>
                     </div>
-                    
+
                     <div className="p-4 border-t border-gray-100 bg-gray-50 md:rounded-b-2xl">
-                        <button 
+                        <button
                             onClick={onClose}
                             className="w-full py-3 rounded-xl font-semibold text-white transition-transform active:scale-95"
                             style={{ backgroundColor: '#3B4D3A' }}
@@ -219,7 +279,7 @@ const DivisionsSection: React.FC = () => {
                                         );
                                     })}
                                 </div>
-                                
+
                                 {/* Connector ke Tier 2 */}
                                 {structure.middle.length > 0 && (
                                     <div className="absolute" style={{ top: '100%', left: '50%', transform: 'translateX(-50%)' }}>
@@ -236,22 +296,22 @@ const DivisionsSection: React.FC = () => {
                         {structure.middle.length > 0 && (
                             <div className="flex flex-col items-center relative">
                                 {/* Horizontal Line Spanning Tier 2 */}
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl hidden md:block">
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl hidden md:block" style={{ zIndex: 0 }}>
                                     <div className="horizontal-line h-0.5 w-full" style={{ backgroundColor: '#E8DCC3' }} />
                                 </div>
 
-                                <div className="flex flex-wrap justify-center gap-4 md:gap-8 w-full max-w-5xl relative pt-8 px-2">
+                                <div className="flex flex-wrap justify-center gap-4 md:gap-6 w-full max-w-7xl relative pt-8 px-2">
                                     {structure.middle.map((position, index) => (
                                         <div key={position.id} className="flex flex-col items-center relative group">
                                             {/* Vertical Connectors (Desktop) */}
-                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 hidden md:block">
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 hidden md:block" style={{ zIndex: 50 }}>
                                                 <div className="vertical-line w-0.5 h-8" style={{ backgroundColor: '#E8DCC3', animationDelay: '0.3s' }} />
-                                                <div className="connector-dot w-2 h-2 rounded-full absolute -bottom-1 left-1/2 -translate-x-1/2" style={{ backgroundColor: '#3B4D3A', animationDelay: '0.3s' }} />
+                                                <div className="connector-dot w-2 h-2 rounded-full absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ backgroundColor: '#3B4D3A', animationDelay: '0.3s' }} />
                                             </div>
 
                                             {/* Card */}
                                             <div
-                                                className="position-card p-4 md:p-5 rounded-xl transition-all duration-300 w-40 md:w-44 bg-white relative z-20"
+                                                className="position-card p-4 md:p-5 rounded-xl transition-all duration-300 w-48 md:w-56 bg-white relative z-10 h-full flex flex-col justify-between"
                                                 style={{
                                                     animationDelay: `${(structure.top.length + index) * 100}ms`,
                                                     border: '2px solid #E8DCC3',
@@ -269,7 +329,7 @@ const DivisionsSection: React.FC = () => {
                                         </div>
                                     ))}
                                 </div>
-                                
+
                                 {/* Line Connector to Divisions */}
                                 {structure.divisions.length > 0 && (
                                     <div className="relative mt-8">
@@ -321,15 +381,16 @@ const DivisionsSection: React.FC = () => {
                                             const IconComponent = getIconForPosition(position.name);
                                             return (
                                                 <div key={position.id} className="relative flex flex-col items-center">
-                                                    
+
                                                     {/* Garis Vertikal Kecil ke Kartu */}
                                                     <div className="absolute -top-8 left-1/2 -translate-x-1/2">
                                                         <div className="h-8 w-0.5" style={{ backgroundColor: '#E8DCC3' }} />
                                                         <div className="w-1.5 h-1.5 rounded-full absolute top-0 left-1/2 -translate-x-1/2" style={{ backgroundColor: '#3B4D3A' }} />
                                                     </div>
 
-                                                    <div
-                                                        className="position-card w-full p-4 rounded-lg transition-all duration-300 relative bg-white group hover:shadow-lg hover:-translate-y-1"
+                                                    <button
+                                                        onClick={() => setSelectedDivision(position)}
+                                                        className="position-card w-full p-4 rounded-lg transition-all duration-300 relative bg-white group hover:shadow-lg hover:-translate-y-1 cursor-pointer text-left"
                                                         style={{
                                                             animationDelay: `${(structure.top.length + structure.middle.length + index) * 50}ms`,
                                                             border: '1px solid rgba(232, 220, 195, 0.5)',
@@ -349,7 +410,7 @@ const DivisionsSection: React.FC = () => {
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </button>
                                                 </div>
                                             );
                                         })}
@@ -366,11 +427,16 @@ const DivisionsSection: React.FC = () => {
                 )}
             </div>
 
-            {/* Render Modal */}
-            <DivisionsModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-                divisions={structure.divisions} 
+            {/* Render Modals */}
+            <DivisionsModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                divisions={structure.divisions}
+            />
+            <DivisionDetailModal
+                isOpen={selectedDivision !== null}
+                onClose={() => setSelectedDivision(null)}
+                division={selectedDivision}
             />
         </section>
     );
